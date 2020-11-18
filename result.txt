@@ -1,0 +1,69 @@
+TimeHeaders: {
+                        setgroupNames: function (dateEmail) {
+                            const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            var dateToday = new Date();
+                            var yearTracker = dateToday.getFullYear() - dateEmail.getFullYear();
+                            var monthTracker = dateToday.getMonth() - dateEmail.getMonth();
+                            var dateTracker = dateToday.getDate() - dateEmail.getDate();
+                            var dayTracker = dateToday.getDay() + dateEmail.getDay();
+                            var returnPeriod;
+
+                            switch (yearTracker) {
+                                case 0: //This year
+                                    returnPeriod = EmailTracking.UI.Widgets.options.main_email.SetGroupHeaders.TimeHeaders.withinCurrentYearSwitch(
+                                        dateTracker, monthTracker, dateEmail, dateToday, daysOfWeek, returnPeriod);
+                                    break;
+                                case 1: //Last year
+                                    returnPeriod = "Last Year";
+                                    break;
+                                default: //More than 1 year ago
+                                    returnPeriod = yearTracker + " Years Ago";
+                                    break;
+                            }
+                            return returnPeriod;
+                        },
+                        withinCurrentYearSwitch: function (dateTracker, monthTracker, dateEmail, dateToday, daysOfWeek, returnPeriod) {
+                            switch (monthTracker) {
+                                case 0: //Same month
+                                    returnPeriod = EmailTracking.UI.Widgets.options.main_email.SetGroupHeaders.TimeHeaders.withinCurrentMonthSwitch(
+                                        dateTracker, dateEmail, dateToday, daysOfWeek, returnPeriod);
+                                    break;
+                                case 1: //Last month
+                                    returnPeriod = "Last Month";
+                                    break;
+                                default: //More than 1 month ago
+                                    returnPeriod = monthTracker + " Months Ago";
+                                    break;
+                            }
+                            return returnPeriod;
+                        },
+                        withinCurrentMonthSwitch: function (dateTracker, dateEmail, dateToday, daysOfWeek, returnPeriod) {
+                            switch (dateTracker) {
+                                case 0: //Today
+                                    returnPeriod = "Today";
+                                    break;
+                                case 1: //Yesterday
+                                    if (dateEmail.getDay() == 6) {
+                                        returnPeriod = "Last Week";
+                                        break;
+                                    }
+                                    returnPeriod = "Yesterday";
+                                    break;
+                                default: //More than 1 day ago
+                                    let weeksAgoCount = 0;
+                                    let day = dateToday.getDay();
+                                    while (dateTracker >= 0) {
+                                        if (day == -1) {
+                                            weeksAgoCount++;
+                                            day = 6;
+                                        }
+                                        day--;
+                                        dateTracker--;
+                                    }
+                                    if (weeksAgoCount == 0) { returnPeriod = daysOfWeek[dateEmail.getDay()]; break; }
+                                    if (weeksAgoCount == 1) { returnPeriod = "Last Week"; break; }
+                                    returnPeriod = weeksAgoCount + " Weeks Ago";
+                            }
+                            return returnPeriod;
+                        }
+                    },
